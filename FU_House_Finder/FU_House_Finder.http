@@ -1,0 +1,6 @@
+@FU_House_Finder_HostAddress = http://localhost:5293
+
+GET {{FU_House_Finder_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
