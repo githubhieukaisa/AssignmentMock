@@ -62,3 +62,10 @@ obj/
 *.mdf
 .env
 appsettings.*.json
+# Bỏ qua tất cả các file appsettings
+**/appsettings.json
+**/appsettings.*.json
+
+# Hoặc nếu bạn muốn giữ lại file gốc (để giữ cấu trúc) và chỉ bỏ qua file môi trường:
+**/appsettings.Development.json
+**/appsettings.Production.json
