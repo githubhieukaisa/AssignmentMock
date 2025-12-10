@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="APIServer/APIServer.csproj" />
+  <Project Path="AuthenticationServer/AuthenticationServer.csproj" />
+</Solution>
