@@ -1,4 +1,7 @@
 
+using FU_House_Finder_Auth.Repositories.Context;
+using Microsoft.EntityFrameworkCore;
+
 namespace FU_House_Finder_Auth
 {
     public class Program
@@ -6,6 +9,10 @@ namespace FU_House_Finder_Auth
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Add DbContext
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add services to the container.
 
@@ -34,3 +41,4 @@ namespace FU_House_Finder_Auth
         }
     }
 }
+

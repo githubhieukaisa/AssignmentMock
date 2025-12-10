@@ -1,4 +1,7 @@
 
+using FU_House_Finder.Repositories.Context;
+using Microsoft.EntityFrameworkCore;
+
 namespace FU_House_Finder
 {
     public class Program
@@ -8,6 +11,10 @@ namespace FU_House_Finder
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            // Add DbContext
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
