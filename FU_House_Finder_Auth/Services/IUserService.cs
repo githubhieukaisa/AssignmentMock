@@ -6,5 +6,7 @@ namespace FU_House_Finder_Auth.Services
     public interface IUserService
     {
         Task<User> RegisterAsync(RegisterDto registerDto, UserRole role);
+        Task<LoginResponseDto> LoginAsync(LoginDto loginDto);
+        Task<LoginResponseDto> RefreshTokenAsync(string refreshToken);
     }
 }
