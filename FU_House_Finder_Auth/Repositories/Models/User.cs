@@ -1,6 +1,6 @@
 ﻿namespace FU_House_Finder_Auth.Repositories.Models
 {
-    public class Users
+    public class User
     {
         public Guid Id { get; set; }
         public string FullName { get; set; } = string.Empty;

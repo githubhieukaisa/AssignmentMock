@@ -1,5 +1,8 @@
 
+using FU_House_Finder_Auth.Repositories;
 using FU_House_Finder_Auth.Repositories.Context;
+using FU_House_Finder_Auth.Repositories.Interface;
+using FU_House_Finder_Auth.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace FU_House_Finder_Auth
@@ -15,6 +18,9 @@ namespace FU_House_Finder_Auth
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add services to the container.
+
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
