@@ -49,5 +49,32 @@ namespace FU_House_Finder.Repositories
                 .Where(h => h.Id == id && !h.IsDeleted)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<House> CreateHouseAsync(House house)
+        {
+            _context.Houses.Add(house);
+            await _context.SaveChangesAsync();
+            return house;
+        }
+
+        public async Task<House> UpdateHouseAsync(House house)
+        {
+            _context.Houses.Update(house);
+            await _context.SaveChangesAsync();
+            return house;
+        }
+
+        public async Task<bool> DeleteHouseAsync(int id)
+        {
+            var house = await _context.Houses.FindAsync(id);
+            if (house == null)
+            {
+                return false;
+            }
+
+            house.IsDeleted = true;
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

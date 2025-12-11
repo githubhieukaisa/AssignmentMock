@@ -1,6 +1,8 @@
 ﻿using FU_House_Finder.DTO;
 using FU_House_Finder.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FU_House_Finder.Controllers
 {
@@ -36,6 +38,116 @@ namespace FU_House_Finder.Controllers
             }
 
             return Ok(house);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<ActionResult<HouseDto>> CreateHouse([FromBody] CreateHouseDto createHouseDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var landlordId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(landlordId))
+                {
+                    return Unauthorized(new { message = "Không thể xác thực người dùng" });
+                }
+
+                var house = await _houseService.CreateHouseAsync(createHouseDto, landlordId);
+                return CreatedAtAction(nameof(GetHouseDetail), new { id = house.Id }, house);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid("Bạn không có quyền");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpPut("{id}")]
+        public async Task<ActionResult<HouseDto>> UpdateHouse(int id, [FromBody] UpdateHouseDto updateHouseDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var landlordId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(landlordId))
+                {
+                    return Unauthorized(new { message = "Không thể xác thực người dùng" });
+                }
+
+                var house = await _houseService.UpdateHouseAsync(id, updateHouseDto, landlordId);
+
+                if (house == null)
+                {
+                    return NotFound(new { message = "Không tìm thấy nhà" });
+                }
+
+                return Ok(house);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteHouse(int id)
+        {
+            try
+            {
+                var landlordId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(landlordId))
+                {
+                    return Unauthorized(new { message = "Không thể xác thực người dùng" });
+                }
+
+                var result = await _houseService.DeleteHouseAsync(id, landlordId);
+
+                if (!result)
+                {
+                    return NotFound(new { message = "Không tìm thấy nhà" });
+                }
+
+                return Ok(new { message = "Xóa nhà trọ thành công" });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }
