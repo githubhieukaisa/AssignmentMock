@@ -1,11 +1,12 @@
 ﻿using FU_House_Finder.DTO;
 using FU_House_Finder.Services;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FU_House_Finder.Controllers
 {
-    [Route("api/rooms")]
+    [Route("api/[controller]")]
     [ApiController]
     public class RoomController : ControllerBase
     {
@@ -29,6 +30,7 @@ namespace FU_House_Finder.Controllers
             return Ok(room);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<RoomDto>> CreateRoom([FromBody] CreateRoomDto createRoomDto)
         {
@@ -37,10 +39,33 @@ namespace FU_House_Finder.Controllers
                 return BadRequest(ModelState);
             }
 
-            var room = await _roomService.CreateRoomAsync(createRoomDto);
-            return CreatedAtAction(nameof(GetRoomById), new { id = room.Id }, room);
+            try
+            {
+                var landlordId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(landlordId))
+                {
+                    return Unauthorized(new { message = "Không thể xác thực người dùng" });
+                }
+
+                var room = await _roomService.CreateRoomAsync(createRoomDto, landlordId);
+                return CreatedAtAction(nameof(GetRoomById), new { id = room.Id }, room);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Forbid("Bạn không có quyền");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<RoomDto>> UpdateRoom(int id, [FromBody] UpdateRoomDto updateRoomDto)
         {
@@ -49,14 +74,39 @@ namespace FU_House_Finder.Controllers
                 return BadRequest(ModelState);
             }
 
-            var room = await _roomService.UpdateRoomAsync(id, updateRoomDto);
-
-            if (room == null)
+            try
             {
-                return NotFound(new { message = "Không tìm thấy phòng" });
-            }
+                var landlordId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return Ok(room);
+                if (string.IsNullOrEmpty(landlordId))
+                {
+                    return Unauthorized(new { message = "Không thể xác thực người dùng" });
+                }
+
+                var room = await _roomService.UpdateRoomAsync(id, updateRoomDto, landlordId);
+
+                if (room == null)
+                {
+                    return NotFound(new { message = "Không tìm thấy phòng" });
+                }
+
+                return Ok(room);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    message = ex.Message // hoặc "Bạn không có quyền"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }
