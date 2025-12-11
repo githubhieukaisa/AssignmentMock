@@ -42,5 +42,12 @@ namespace FU_House_Finder.Repositories
                 .Include(h => h.Rooms)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<House?> GetHouseByIdAsync(int id)
+        {
+            return await _context.Houses
+                .Where(h => h.Id == id && !h.IsDeleted)
+                .FirstOrDefaultAsync();
+        }
     }
 }

@@ -16,7 +16,6 @@ namespace FU_House_Finder_Auth.Repositories
 
         public async Task<User> RegisterUserAsync(User user)
         {
-            user.Id = Guid.NewGuid();
             user.IsActive = true;
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -33,7 +32,7 @@ namespace FU_House_Finder_Auth.Repositories
             return await _context.Users.AnyAsync(u => u.Email == email);
         }
 
-        public async Task<User?> GetUserByIdAsync(Guid id)
+        public async Task<User?> GetUserByIdAsync(int id)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }

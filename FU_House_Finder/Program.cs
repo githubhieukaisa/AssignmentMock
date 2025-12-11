@@ -1,8 +1,11 @@
-
 using FU_House_Finder.Repositories;
 using FU_House_Finder.Repositories.Context;
 using FU_House_Finder.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 
 namespace FU_House_Finder
 {
@@ -12,18 +15,65 @@ namespace FU_House_Finder
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Config configuration to read from appsettings.Development.json
+            // Config configuration to read from appsettings files
             builder.Configuration
                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
+            // Get JWT settings
+            var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+            var secretKey = jwtSettings["SecretKey"];
+            var issuer = jwtSettings["Issuer"];
+            var audience = jwtSettings["Audience"];
 
+            // Configure JWT Authentication
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = issuer,
+                        ValidAudience = audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                    };
+                });
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
+
+                // Thêm security definition
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                // Bắt Swagger gửi token vào mọi request
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                {
+                    new OpenApiSecurityScheme {
+                        Reference = new OpenApiReference {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] {}
+                }});
+            });
             // Register repositories
             builder.Services.AddScoped<IHouseRepository, HouseRepository>();
+            builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 
             // Register services
             builder.Services.AddScoped<IHouseService, HouseService>();
-
+            builder.Services.AddScoped<IRoomService, RoomService>();
 
             // Add DbContext
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -45,6 +95,8 @@ namespace FU_House_Finder
 
             app.UseHttpsRedirection();
 
+            // Add authentication and authorization middleware
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

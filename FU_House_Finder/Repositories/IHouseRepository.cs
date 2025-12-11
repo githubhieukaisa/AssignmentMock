@@ -6,5 +6,6 @@ namespace FU_House_Finder.Repositories
     {
         Task<List<House>> GetAllHousesAsync(string? keyword, decimal? minPrice, decimal? maxPrice);
         Task<House?> GetHouseDetailAsync(int id);
+        Task<House?> GetHouseByIdAsync(int id);
     }
 }
