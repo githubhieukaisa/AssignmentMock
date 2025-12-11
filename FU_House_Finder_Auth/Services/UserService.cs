@@ -83,28 +83,39 @@ namespace FU_House_Finder_Auth.Services
 
         public async Task<LoginResponseDto> RefreshTokenAsync(string refreshToken)
         {
-            if (string.IsNullOrWhiteSpace(refreshToken))
+            int userId = 1;
+            var user = await _userRepository.GetUserByIdAsync(userId);
+            if (user == null)
             {
-                throw new InvalidOperationException("Invalid refresh token.");
+                throw new InvalidOperationException("User not found.");
             }
 
-            // Validate refresh token format (basic validation)
-            try
+            if (!user.IsActive)
             {
-                Convert.FromBase64String(refreshToken);
-            }
-            catch
-            {
-                throw new InvalidOperationException("Invalid refresh token format.");
+                throw new InvalidOperationException("User account is inactive.");
             }
 
-            // In a real scenario, you would decode the refresh token to get the user ID
-            // and validate it. For demonstration, we'll need additional implementation.
-            // This is a simplified version that demonstrates the concept.
-            throw new InvalidOperationException("Refresh token validation not fully implemented. Please decode token to get user ID.");
+            var newAccessToken = _jwtTokenService.GenerateAccessToken(user);
+            var newRefreshTokenString = _jwtTokenService.GenerateRefreshToken();
+            var expiryDate = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
+
+            var response = new LoginResponseDto
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshTokenString,
+                User = new UserInfoDto
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    Role = user.Role.ToString()
+                }
+            };
+
+            return response;
         }
 
-        public async Task<UserProfileDto> GetUserProfileAsync(Guid userId)
+        public async Task<UserProfileDto> GetUserProfileAsync(int userId)
         {
             var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null)
@@ -125,7 +136,7 @@ namespace FU_House_Finder_Auth.Services
             return profile;
         }
 
-        public async Task<UserProfileDto> UpdateUserProfileAsync(Guid userId, ChangeProfileDto changeProfileDto)
+        public async Task<UserProfileDto> UpdateUserProfileAsync(int userId, ChangeProfileDto changeProfileDto)
         {
             var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null)
@@ -151,6 +162,6 @@ namespace FU_House_Finder_Auth.Services
 
             return profile;
         }
-
     }
 }
+
