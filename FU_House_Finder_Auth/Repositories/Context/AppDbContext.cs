@@ -10,6 +10,7 @@ namespace FU_House_Finder_Auth.Repositories.Context
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,6 +27,21 @@ namespace FU_House_Finder_Auth.Repositories.Context
                 entity.Property(e => e.Role).IsRequired();
                 entity.Property(e => e.AvatarUrl).IsRequired(false);
                 entity.Property(e => e.IsActive).HasDefaultValue(true);
+            });
+
+            // Configure RefreshToken table
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Token).IsRequired();
+                entity.Property(e => e.UserId).IsRequired();
+                entity.Property(e => e.ExpiryDate).IsRequired();
+                entity.Property(e => e.IsRevoked).HasDefaultValue(false);
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+                entity.HasOne(e => e.User)
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Seed data

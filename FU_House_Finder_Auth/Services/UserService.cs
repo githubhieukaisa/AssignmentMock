@@ -65,6 +65,9 @@ namespace FU_House_Finder_Auth.Services
             var refreshTokenString = _jwtTokenService.GenerateRefreshToken();
             var expiryDate = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
 
+            // Save refresh token to database
+            await _userRepository.SaveRefreshTokenAsync(user.Id, refreshTokenString, expiryDate);
+
             var response = new LoginResponseDto
             {
                 AccessToken = accessToken,
@@ -83,8 +86,20 @@ namespace FU_House_Finder_Auth.Services
 
         public async Task<LoginResponseDto> RefreshTokenAsync(string refreshToken)
         {
-            int userId = 1;
-            var user = await _userRepository.GetUserByIdAsync(userId);
+            // Validate refresh token from database
+            var storedToken = await _userRepository.GetRefreshTokenAsync(refreshToken);
+            if (storedToken == null)
+            {
+                throw new InvalidOperationException("Invalid refresh token.");
+            }
+
+            // Check if token is expired
+            if (DateTime.UtcNow > storedToken.ExpiryDate)
+            {
+                throw new InvalidOperationException("Refresh token has expired.");
+            }
+
+            var user = await _userRepository.GetUserByIdAsync(storedToken.UserId);
             if (user == null)
             {
                 throw new InvalidOperationException("User not found.");
@@ -95,9 +110,14 @@ namespace FU_House_Finder_Auth.Services
                 throw new InvalidOperationException("User account is inactive.");
             }
 
+            // Generate new tokens
             var newAccessToken = _jwtTokenService.GenerateAccessToken(user);
             var newRefreshTokenString = _jwtTokenService.GenerateRefreshToken();
-            var expiryDate = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
+            var newExpiryDate = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
+
+            // Revoke old refresh token and save new one
+            await _userRepository.RevokeRefreshTokenAsync(refreshToken);
+            await _userRepository.SaveRefreshTokenAsync(user.Id, newRefreshTokenString, newExpiryDate);
 
             var response = new LoginResponseDto
             {
