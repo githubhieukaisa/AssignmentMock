@@ -20,10 +20,10 @@ namespace FU_House_Finder
 
             // Register repositories
             builder.Services.AddScoped<IHouseRepository, HouseRepository>();
-
+            builder.Services.AddScoped<IRoomRepository, RoomRepository>();
             // Register services
             builder.Services.AddScoped<IHouseService, HouseService>();
-
+            builder.Services.AddScoped<IRoomService, RoomService>();
 
             // Add DbContext
             builder.Services.AddDbContext<AppDbContext>(options =>
