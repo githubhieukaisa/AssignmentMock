@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../FU_House_Finder_Auth/FU_House_Finder_Auth.csproj" />
   <Project Path="FU_House_Finder.csproj" />
 </Solution>
