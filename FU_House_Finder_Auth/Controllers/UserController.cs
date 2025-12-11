@@ -81,7 +81,7 @@ namespace FU_House_Finder_Auth.Controllers
             {
                 // Get user ID from JWT claims
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
                 {
                     return Unauthorized(new { message = "Invalid token." });
                 }
@@ -108,7 +108,7 @@ namespace FU_House_Finder_Auth.Controllers
             {
                 // Get user ID from JWT claims
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
                 {
                     return Unauthorized(new { message = "Invalid token." });
                 }
