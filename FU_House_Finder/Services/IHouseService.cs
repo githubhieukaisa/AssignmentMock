@@ -6,5 +6,8 @@ namespace FU_House_Finder.Services
     {
         Task<List<HouseDto>> GetAllHousesAsync(string? keyword, decimal? minPrice, decimal? maxPrice);
         Task<HouseDetailDto?> GetHouseDetailAsync(int id);
+        Task<HouseDto> CreateHouseAsync(CreateHouseDto createHouseDto, string landlordId);
+        Task<HouseDto?> UpdateHouseAsync(int id, UpdateHouseDto updateHouseDto, string landlordId);
+        Task<bool> DeleteHouseAsync(int id, string landlordId);
     }
 }
