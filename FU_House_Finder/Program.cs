@@ -13,9 +13,10 @@ namespace FU_House_Finder
             var builder = WebApplication.CreateBuilder(args);
 
             // Config configuration to read from appsettings.Development.json
-            builder.Configuration.AddJsonFile("appsettings.Development.json",
-                                  optional: true,
-                                  reloadOnChange: true);
+            builder.Configuration
+               .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+               .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
 
             // Register repositories
             builder.Services.AddScoped<IHouseRepository, HouseRepository>();
