@@ -8,5 +8,7 @@ namespace FU_House_Finder_Auth.Services
         Task<User> RegisterAsync(RegisterDto registerDto, UserRole role);
         Task<LoginResponseDto> LoginAsync(LoginDto loginDto);
         Task<LoginResponseDto> RefreshTokenAsync(string refreshToken);
+        Task<UserProfileDto> GetUserProfileAsync(Guid userId);
+        Task<UserProfileDto> UpdateUserProfileAsync(Guid userId, ChangeProfileDto changeProfileDto);
     }
 }

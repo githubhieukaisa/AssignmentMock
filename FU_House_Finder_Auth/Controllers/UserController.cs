@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using FU_House_Finder_Auth.Dtos;
 using FU_House_Finder_Auth.Services;
 using FU_House_Finder_Auth.Repositories.Models;
@@ -68,6 +70,60 @@ namespace FU_House_Finder_Auth.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred during token refresh", error = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            try
+            {
+                // Get user ID from JWT claims
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "Invalid token." });
+                }
+
+                // Get user profile
+                var profile = await _userService.GetUserProfileAsync(userId);
+                return Ok(profile);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred", error = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] ChangeProfileDto changeProfileDto)
+        {
+            try
+            {
+                // Get user ID from JWT claims
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    return Unauthorized(new { message = "Invalid token." });
+                }
+
+                // Update user profile
+                var profile = await _userService.UpdateUserProfileAsync(userId, changeProfileDto);
+                return Ok(new { message = "Profile updated successfully", profile });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred", error = ex.Message });
             }
         }
     }
