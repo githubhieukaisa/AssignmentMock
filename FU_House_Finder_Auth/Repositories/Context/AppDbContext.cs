@@ -10,6 +10,7 @@ namespace FU_House_Finder_Auth.Repositories.Context
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,6 +29,21 @@ namespace FU_House_Finder_Auth.Repositories.Context
                 entity.Property(e => e.IsActive).HasDefaultValue(true);
             });
 
+            // Configure RefreshToken table
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Token).IsRequired();
+                entity.Property(e => e.UserId).IsRequired();
+                entity.Property(e => e.ExpiryDate).IsRequired();
+                entity.Property(e => e.IsRevoked).HasDefaultValue(false);
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+                entity.HasOne(e => e.User)
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
             // Seed data
             SeedUsers(modelBuilder);
         }
@@ -37,7 +53,7 @@ namespace FU_House_Finder_Auth.Repositories.Context
             modelBuilder.Entity<User>().HasData(
                 new User
                 {
-                    Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                    Id = 1,
                     FullName = "Admin User",
                     Email = "admin@fuhouse.com",
                     PasswordHash = "123",
@@ -48,7 +64,7 @@ namespace FU_House_Finder_Auth.Repositories.Context
                 },
                 new User
                 {
-                    Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+                    Id = 2,
                     FullName = "Staff User",
                     Email = "staff@fuhouse.com",
                     PasswordHash = "staff123",
@@ -59,7 +75,7 @@ namespace FU_House_Finder_Auth.Repositories.Context
                 },
                 new User
                 {
-                    Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
+                    Id = 3,
                     FullName = "Landlord User",
                     Email = "landlord@fuhouse.com",
                     PasswordHash = "landlord123",
@@ -70,7 +86,7 @@ namespace FU_House_Finder_Auth.Repositories.Context
                 },
                 new User
                 {
-                    Id = Guid.Parse("44444444-4444-4444-4444-444444444444"),
+                    Id = 4,
                     FullName = "Student User",
                     Email = "student@fuhouse.com",
                     PasswordHash = "student123",
