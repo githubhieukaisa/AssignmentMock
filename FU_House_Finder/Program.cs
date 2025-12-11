@@ -1,5 +1,7 @@
 
+using FU_House_Finder.Repositories;
 using FU_House_Finder.Repositories.Context;
+using FU_House_Finder.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace FU_House_Finder
@@ -10,7 +12,17 @@ namespace FU_House_Finder
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Config configuration to read from appsettings.Development.json
+            builder.Configuration.AddJsonFile("appsettings.Development.json",
+                                  optional: true,
+                                  reloadOnChange: true);
+
+            // Register repositories
+            builder.Services.AddScoped<IHouseRepository, HouseRepository>();
+
+            // Register services
+            builder.Services.AddScoped<IHouseService, HouseService>();
+
 
             // Add DbContext
             builder.Services.AddDbContext<AppDbContext>(options =>
