@@ -13,7 +13,6 @@ namespace FU_House_Finder.Repositories
             _context = context;
         }
 
-        
         public async Task<List<House>> GetAllHousesAsync(string? keyword, decimal? minPrice, decimal? maxPrice)
         {
             var query = _context.Houses.Where(h => !h.IsDeleted);
@@ -41,6 +40,13 @@ namespace FU_House_Finder.Repositories
             return await _context.Houses
                 .Where(h => h.Id == id && !h.IsDeleted)
                 .Include(h => h.Rooms)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<House?> GetHouseByIdAsync(int id)
+        {
+            return await _context.Houses
+                .Where(h => h.Id == id && !h.IsDeleted)
                 .FirstOrDefaultAsync();
         }
     }
