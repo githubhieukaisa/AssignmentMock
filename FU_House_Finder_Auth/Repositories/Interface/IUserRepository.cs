@@ -7,7 +7,7 @@ namespace FU_House_Finder_Auth.Repositories.Interface
         Task<User> RegisterUserAsync(User user);
         Task<User?> GetUserByEmailAsync(string email);
         Task<bool> UserExistsAsync(string email);
-        Task<User?> GetUserByIdAsync(Guid id);
+        Task<User?> GetUserByIdAsync(int id);
         Task<User> UpdateUserAsync(User user);
     }
 }

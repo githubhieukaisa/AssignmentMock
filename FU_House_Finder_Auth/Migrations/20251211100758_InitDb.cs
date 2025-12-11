@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -8,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FU_House_Finder_Auth.Migrations
 {
     /// <inheritdoc />
-    public partial class initDb : Migration
+    public partial class InitDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,7 +16,8 @@ namespace FU_House_Finder_Auth.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -36,10 +36,10 @@ namespace FU_House_Finder_Auth.Migrations
                 columns: new[] { "Id", "AvatarUrl", "Email", "FullName", "IsActive", "PasswordHash", "PhoneNumber", "Role" },
                 values: new object[,]
                 {
-                    { new Guid("11111111-1111-1111-1111-111111111111"), null, "admin@fuhouse.com", "Admin User", true, "123", "0123456789", 0 },
-                    { new Guid("22222222-2222-2222-2222-222222222222"), null, "staff@fuhouse.com", "Staff User", true, "staff123", "0123456790", 1 },
-                    { new Guid("33333333-3333-3333-3333-333333333333"), null, "landlord@fuhouse.com", "Landlord User", true, "landlord123", "0123456791", 2 },
-                    { new Guid("44444444-4444-4444-4444-444444444444"), null, "student@fuhouse.com", "Student User", true, "student123", "0123456792", 3 }
+                    { 1, null, "admin@fuhouse.com", "Admin User", true, "123", "0123456789", 0 },
+                    { 2, null, "staff@fuhouse.com", "Staff User", true, "staff123", "0123456790", 1 },
+                    { 3, null, "landlord@fuhouse.com", "Landlord User", true, "landlord123", "0123456791", 2 },
+                    { 4, null, "student@fuhouse.com", "Student User", true, "student123", "0123456792", 3 }
                 });
         }
 
