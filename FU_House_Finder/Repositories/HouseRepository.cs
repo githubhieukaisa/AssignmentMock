@@ -13,6 +13,7 @@ namespace FU_House_Finder.Repositories
             _context = context;
         }
 
+        
         public async Task<List<House>> GetAllHousesAsync(string? keyword, decimal? minPrice, decimal? maxPrice)
         {
             var query = _context.Houses.Where(h => !h.IsDeleted);
