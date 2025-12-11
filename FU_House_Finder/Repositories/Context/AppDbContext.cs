@@ -25,6 +25,12 @@ namespace FU_House_Finder.Repositories.Context
                 entity.Property(e => e.Address).IsRequired();
                 entity.Property(e => e.PowerPrice).HasPrecision(18, 2);
                 entity.Property(e => e.WaterPrice).HasPrecision(18, 2);
+                
+                // Configure one-to-many relationship: House -> Rooms
+                entity.HasMany(h => h.Rooms)
+                    .WithOne(r => r.House)
+                    .HasForeignKey(r => r.HouseId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Configure Room entity
@@ -33,6 +39,7 @@ namespace FU_House_Finder.Repositories.Context
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Name).IsRequired();
                 entity.Property(e => e.Price).HasPrecision(18, 2);
+                entity.Property(e => e.HouseId).IsRequired();
             });
 
             // Configure Rate entity

@@ -104,7 +104,7 @@ namespace FU_House_Finder_Auth.Services
             throw new InvalidOperationException("Refresh token validation not fully implemented. Please decode token to get user ID.");
         }
 
-        public async Task<UserProfileDto> GetUserProfileAsync(Guid userId)
+        public async Task<UserProfileDto> GetUserProfileAsync(int userId)
         {
             var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null)
@@ -125,7 +125,7 @@ namespace FU_House_Finder_Auth.Services
             return profile;
         }
 
-        public async Task<UserProfileDto> UpdateUserProfileAsync(Guid userId, ChangeProfileDto changeProfileDto)
+        public async Task<UserProfileDto> UpdateUserProfileAsync(int userId, ChangeProfileDto changeProfileDto)
         {
             var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null)
