@@ -9,14 +9,14 @@ namespace FU_House_Finder_Auth.Repositories.Context
         {
         }
 
-        public DbSet<Users> Users { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             // Configure Users table
-            modelBuilder.Entity<Users>(entity =>
+            modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.FullName).IsRequired();
@@ -34,8 +34,8 @@ namespace FU_House_Finder_Auth.Repositories.Context
 
         private void SeedUsers(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Users>().HasData(
-                new Users
+            modelBuilder.Entity<User>().HasData(
+                new User
                 {
                     Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
                     FullName = "Admin User",
@@ -46,7 +46,7 @@ namespace FU_House_Finder_Auth.Repositories.Context
                     AvatarUrl = null,
                     IsActive = true
                 },
-                new Users
+                new User
                 {
                     Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
                     FullName = "Staff User",
@@ -57,7 +57,7 @@ namespace FU_House_Finder_Auth.Repositories.Context
                     AvatarUrl = null,
                     IsActive = true
                 },
-                new Users
+                new User
                 {
                     Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
                     FullName = "Landlord User",
@@ -68,7 +68,7 @@ namespace FU_House_Finder_Auth.Repositories.Context
                     AvatarUrl = null,
                     IsActive = true
                 },
-                new Users
+                new User
                 {
                     Id = Guid.Parse("44444444-4444-4444-4444-444444444444"),
                     FullName = "Student User",
