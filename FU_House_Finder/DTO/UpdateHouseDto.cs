@@ -1,11 +1,9 @@
-﻿namespace FU_House_Finder.Repositories.Models
+using System.ComponentModel.DataAnnotations;
+
+namespace FU_House_Finder.DTO
 {
-    public class House
+    public class UpdateHouseDto
     {
-        public int Id { get; set; }
-
-        public int LandlordId { get; set; }
-
         public string Name { get; set; } = string.Empty;
 
         public string Address { get; set; } = string.Empty;
@@ -17,12 +15,5 @@
         public decimal PowerPrice { get; set; }
 
         public decimal WaterPrice { get; set; }
-
-        public DateTime CreatedDate { get; set; }
-
-        public bool IsDeleted { get; set; }
-
-        public ICollection<Room> Rooms { get; set; } = new List<Room>();
-
     }
 }
