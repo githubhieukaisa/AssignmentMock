@@ -11,4 +11,6 @@ namespace FU_House_Finder_Auth.Services
         Task<UserProfileDto> GetUserProfileAsync(int userId);
         Task<UserProfileDto> UpdateUserProfileAsync(int userId, ChangeProfileDto changeProfileDto);
     }
+
+
 }
