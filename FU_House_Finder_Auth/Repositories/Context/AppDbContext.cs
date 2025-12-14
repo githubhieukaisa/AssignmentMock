@@ -103,7 +103,7 @@ namespace FU_House_Finder_Auth.Repositories.Context
                     PasswordHash = "landlord2",
                     PhoneNumber = "0123456791",
                     Role = UserRole.Landlord,
-                    IsActive = false // pending approval
+                    IsActive = false 
                 },
                 new User
                 {

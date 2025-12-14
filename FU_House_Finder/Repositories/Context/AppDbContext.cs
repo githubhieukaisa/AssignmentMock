@@ -195,6 +195,27 @@ namespace FU_House_Finder.Repositories.Context
                     Description = "Another room in extra house"
                 }
             );
+            // Add new Rates
+            modelBuilder.Entity<Rate>().HasData(
+                new Rate
+                {
+                    Id = 2000,
+                    HouseId = 4,
+                    StudentId = 7, // Student Gamma
+                    Star = 5,
+                    Comment = "Brand new house, very clean!",
+                    CreatedDate = new DateTime(2025, 2, 10)
+                },
+                new Rate
+                {
+                    Id = 2001,
+                    HouseId = 4, // Existing house
+                    StudentId = 7, // Student Gamma
+                    Star = 4,
+                    Comment = "Visited as a guest, nice place.",
+                    CreatedDate = new DateTime(2025, 2, 11)
+                }
+            );
         }
     }
 }

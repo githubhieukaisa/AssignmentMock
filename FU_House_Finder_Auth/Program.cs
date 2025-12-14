@@ -82,6 +82,18 @@ namespace FU_House_Finder_Auth
                     }
                 });
             });
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    policy =>
+                    {
+                        policy
+                            .AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+
 
             var app = builder.Build();
 
@@ -93,6 +105,8 @@ namespace FU_House_Finder_Auth
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors("AllowAll");
 
             app.UseAuthentication();
             app.UseAuthorization();

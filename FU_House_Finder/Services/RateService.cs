@@ -39,9 +39,9 @@ namespace FU_House_Finder.Services
                         if (user != null) studentName = user.FullName;
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-
+                    Console.WriteLine($"Exception fetching user {r.StudentId}: {ex.Message}");
                 }
 
                 result.Add(new

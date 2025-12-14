@@ -1,4 +1,5 @@
-﻿using FU_House_Finder.Repositories.Models;
+﻿using FU_House_Finder.DTO;
+using FU_House_Finder.Repositories.Models;
 using FU_House_Finder.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -49,12 +50,7 @@ namespace FU_House_Finder.Controllers
             return CreatedAtAction(nameof(GetRatesByHouse), new { houseId = created.HouseId }, new { message = "Rate created", id = created.Id });
         }
 
-        public class CreateRateDto
-        {
-            public int HouseId { get; set; }
-            public int Star { get; set; }
-            public string? Comment { get; set; }
-        }
+        
     }
 }
 
