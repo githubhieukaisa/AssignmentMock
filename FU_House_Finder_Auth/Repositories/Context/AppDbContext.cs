@@ -26,7 +26,6 @@ namespace FU_House_Finder_Auth.Repositories.Context
                 entity.Property(e => e.PhoneNumber).IsRequired();
                 entity.Property(e => e.Role).IsRequired();
                 entity.Property(e => e.AvatarUrl).IsRequired(false);
-                entity.Property(e => e.IsActive).HasDefaultValue(true);
             });
 
             // Configure RefreshToken table
@@ -103,7 +102,7 @@ namespace FU_House_Finder_Auth.Repositories.Context
                     PasswordHash = "landlord2",
                     PhoneNumber = "0123456791",
                     Role = UserRole.Landlord,
-                    IsActive = false // pending approval
+                    IsActive = false 
                 },
                 new User
                 {
@@ -124,6 +123,26 @@ namespace FU_House_Finder_Auth.Repositories.Context
                     PhoneNumber = "0123456795",
                     Role = UserRole.Student,
                     IsActive = true
+                },
+                new User
+                {
+                    Id = 8,
+                    FullName = "Landlord Pending 2",
+                    Email = "landlord3@fuhouse.com",
+                    PasswordHash = "landlord3",
+                    PhoneNumber = "0123456792",
+                    Role = UserRole.Landlord,
+                    IsActive = false
+                },
+                new User
+                {
+                    Id = 9,
+                    FullName = "Landlord Pending 3",
+                    Email = "landlord3@fuhouse.com",
+                    PasswordHash = "landlord4",
+                    PhoneNumber = "0123456793",
+                    Role = UserRole.Landlord,
+                    IsActive = false
                 }
             );
         }
