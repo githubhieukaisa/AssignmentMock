@@ -108,5 +108,43 @@ namespace FU_House_Finder.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+    
+    [Authorize(Roles = "Landlord")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRoom(int id)
+        {
+            try
+            {
+                var landlordId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(landlordId))
+                {
+                    return Unauthorized(new { message = "Không thể xác thực người dùng" });
+                }
+
+                var deleted = await _roomService.DeleteRoomAsync(id, landlordId);
+                if (!deleted)
+                {
+                    return NotFound(new { message = "Không tìm thấy phòng" });
+                }
+
+                return Ok(new { message = "Xóa phòng thành công" });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

@@ -8,6 +8,8 @@ namespace FU_House_Finder.Repositories
 
         Task<Room> CreateRoomAsync(Room room);
         Task<Room?> UpdateRoomAsync(int id, Room room);
+        Task<bool> DeleteRoomAsync(int id);
+
 
     }
 }
