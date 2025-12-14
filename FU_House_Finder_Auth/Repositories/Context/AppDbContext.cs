@@ -94,6 +94,36 @@ namespace FU_House_Finder_Auth.Repositories.Context
                     Role = UserRole.Student,
                     AvatarUrl = null,
                     IsActive = true
+                },
+                new User
+                {
+                    Id = 5,
+                    FullName = "Landlord Pending 1",
+                    Email = "landlord2@fuhouse.com",
+                    PasswordHash = "landlord2",
+                    PhoneNumber = "0123456791",
+                    Role = UserRole.Landlord,
+                    IsActive = false // pending approval
+                },
+                new User
+                {
+                    Id = 6,
+                    FullName = "Landlord Extra",
+                    Email = "landlord3@fuhouse.com",
+                    PasswordHash = "landlord3",
+                    PhoneNumber = "0123456794",
+                    Role = UserRole.Landlord,
+                    IsActive = true
+                },
+                new User
+                {
+                    Id = 7,
+                    FullName = "Student Gamma",
+                    Email = "student3@fuhouse.com",
+                    PasswordHash = "student3",
+                    PhoneNumber = "0123456795",
+                    Role = UserRole.Student,
+                    IsActive = true
                 }
             );
         }

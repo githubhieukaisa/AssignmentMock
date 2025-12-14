@@ -25,7 +25,7 @@ namespace FU_House_Finder.Repositories.Context
                 entity.Property(e => e.Address).IsRequired();
                 entity.Property(e => e.PowerPrice).HasPrecision(18, 2);
                 entity.Property(e => e.WaterPrice).HasPrecision(18, 2);
-                
+
                 // Configure one-to-many relationship: House -> Rooms
                 entity.HasMany(h => h.Rooms)
                     .WithOne(r => r.House)
@@ -87,6 +87,19 @@ namespace FU_House_Finder.Repositories.Context
                     PowerPrice = 3800m,
                     WaterPrice = 2200m,
                     CreatedDate = new DateTime(2024, 12, 10),
+                    IsDeleted = false
+                },
+                new House
+                {
+                    Id = 4,
+                    LandlordId = 6, // Landlord Extra
+                    Name = "Landlord Extra House",
+                    Address = "789 Extra St",
+                    Description = "House for extra landlord",
+                    CampusName = "Extra Campus",
+                    PowerPrice = 3700m,
+                    WaterPrice = 2100m,
+                    CreatedDate = new DateTime(2025, 2, 1),
                     IsDeleted = false
                 }
             );
@@ -158,6 +171,28 @@ namespace FU_House_Finder.Repositories.Context
                     MaxPeople = 2,
                     Status = RoomStatus.Available,
                     Description = "Phòng thoáng mát, cách âm tốt, có WiFi"
+                },
+                new Room
+                {
+                    Id = 7,
+                    HouseId = 4,
+                    Name = "Room 3A",
+                    Price = 3100000m,
+                    Area = 21f,
+                    MaxPeople = 2,
+                    Status = RoomStatus.Available,
+                    Description = "New room in extra house"
+                },
+                new Room
+                {
+                    Id = 8,
+                    HouseId = 4,
+                    Name = "Room 3B",
+                    Price = 3300000m,
+                    Area = 23f,
+                    MaxPeople = 3,
+                    Status = RoomStatus.Available,
+                    Description = "Another room in extra house"
                 }
             );
         }
