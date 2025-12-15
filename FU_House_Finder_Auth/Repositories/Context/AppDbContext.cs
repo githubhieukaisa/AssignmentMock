@@ -10,6 +10,7 @@ namespace FU_House_Finder_Auth.Repositories.Context
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,7 +26,21 @@ namespace FU_House_Finder_Auth.Repositories.Context
                 entity.Property(e => e.PhoneNumber).IsRequired();
                 entity.Property(e => e.Role).IsRequired();
                 entity.Property(e => e.AvatarUrl).IsRequired(false);
-                entity.Property(e => e.IsActive).HasDefaultValue(true);
+            });
+
+            // Configure RefreshToken table
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Token).IsRequired();
+                entity.Property(e => e.UserId).IsRequired();
+                entity.Property(e => e.ExpiryDate).IsRequired();
+                entity.Property(e => e.IsRevoked).HasDefaultValue(false);
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+                entity.HasOne(e => e.User)
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Seed data
@@ -78,6 +93,56 @@ namespace FU_House_Finder_Auth.Repositories.Context
                     Role = UserRole.Student,
                     AvatarUrl = null,
                     IsActive = true
+                },
+                new User
+                {
+                    Id = 5,
+                    FullName = "Landlord Pending 1",
+                    Email = "landlord2@fuhouse.com",
+                    PasswordHash = "landlord2",
+                    PhoneNumber = "0123456791",
+                    Role = UserRole.Landlord,
+                    IsActive = false 
+                },
+                new User
+                {
+                    Id = 6,
+                    FullName = "Landlord Extra",
+                    Email = "landlord3@fuhouse.com",
+                    PasswordHash = "landlord3",
+                    PhoneNumber = "0123456794",
+                    Role = UserRole.Landlord,
+                    IsActive = true
+                },
+                new User
+                {
+                    Id = 7,
+                    FullName = "Student Gamma",
+                    Email = "student3@fuhouse.com",
+                    PasswordHash = "student3",
+                    PhoneNumber = "0123456795",
+                    Role = UserRole.Student,
+                    IsActive = true
+                },
+                new User
+                {
+                    Id = 8,
+                    FullName = "Landlord Pending 2",
+                    Email = "landlord3@fuhouse.com",
+                    PasswordHash = "landlord3",
+                    PhoneNumber = "0123456792",
+                    Role = UserRole.Landlord,
+                    IsActive = false
+                },
+                new User
+                {
+                    Id = 9,
+                    FullName = "Landlord Pending 3",
+                    Email = "landlord3@fuhouse.com",
+                    PasswordHash = "landlord4",
+                    PhoneNumber = "0123456793",
+                    Role = UserRole.Landlord,
+                    IsActive = false
                 }
             );
         }

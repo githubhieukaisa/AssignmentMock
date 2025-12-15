@@ -17,6 +17,7 @@ namespace FU_House_Finder
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddHttpClient();
 
             // Config configuration to read from appsettings files
             builder.Configuration
@@ -60,15 +61,16 @@ namespace FU_House_Finder
             // Register repositories
             builder.Services.AddScoped<IHouseRepository, HouseRepository>();
             builder.Services.AddScoped<IRoomRepository, RoomRepository>();
-
+            builder.Services.AddScoped<IRateRepository, RateRepository>();
             // Register services
             builder.Services.AddScoped<IHouseService, HouseService>();
             builder.Services.AddScoped<IRoomService, RoomService>();
+            builder.Services.AddScoped<IRateService, RateService>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            
+
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FU House Finder API", Version = "v1" });

@@ -65,6 +65,9 @@ namespace FU_House_Finder_Auth.Services
             var refreshTokenString = _jwtTokenService.GenerateRefreshToken();
             var expiryDate = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
 
+            // Save refresh token to database
+            await _userRepository.SaveRefreshTokenAsync(user.Id, refreshTokenString, expiryDate);
+
             var response = new LoginResponseDto
             {
                 AccessToken = accessToken,
@@ -83,25 +86,53 @@ namespace FU_House_Finder_Auth.Services
 
         public async Task<LoginResponseDto> RefreshTokenAsync(string refreshToken)
         {
-            if (string.IsNullOrWhiteSpace(refreshToken))
+            // Validate refresh token from database
+            var storedToken = await _userRepository.GetRefreshTokenAsync(refreshToken);
+            if (storedToken == null)
             {
                 throw new InvalidOperationException("Invalid refresh token.");
             }
 
-            // Validate refresh token format (basic validation)
-            try
+            // Check if token is expired
+            if (DateTime.UtcNow > storedToken.ExpiryDate)
             {
-                Convert.FromBase64String(refreshToken);
-            }
-            catch
-            {
-                throw new InvalidOperationException("Invalid refresh token format.");
+                throw new InvalidOperationException("Refresh token has expired.");
             }
 
-            // In a real scenario, you would decode the refresh token to get the user ID
-            // and validate it. For demonstration, we'll need additional implementation.
-            // This is a simplified version that demonstrates the concept.
-            throw new InvalidOperationException("Refresh token validation not fully implemented. Please decode token to get user ID.");
+            var user = await _userRepository.GetUserByIdAsync(storedToken.UserId);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User not found.");
+            }
+
+            if (!user.IsActive)
+            {
+                throw new InvalidOperationException("User account is inactive.");
+            }
+
+            // Generate new tokens
+            var newAccessToken = _jwtTokenService.GenerateAccessToken(user);
+            var newRefreshTokenString = _jwtTokenService.GenerateRefreshToken();
+            var newExpiryDate = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
+
+            // Revoke old refresh token and save new one
+            await _userRepository.RevokeRefreshTokenAsync(refreshToken);
+            await _userRepository.SaveRefreshTokenAsync(user.Id, newRefreshTokenString, newExpiryDate);
+
+            var response = new LoginResponseDto
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshTokenString,
+                User = new UserInfoDto
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    Role = user.Role.ToString()
+                }
+            };
+
+            return response;
         }
 
         public async Task<UserProfileDto> GetUserProfileAsync(int userId)
@@ -151,6 +182,6 @@ namespace FU_House_Finder_Auth.Services
 
             return profile;
         }
-
     }
 }
+

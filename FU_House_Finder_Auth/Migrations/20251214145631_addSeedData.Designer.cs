@@ -4,6 +4,7 @@ using FU_House_Finder_Auth.Repositories.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FU_House_Finder_Auth.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251214145631_addSeedData")]
+    partial class addSeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,7 +80,9 @@ namespace FU_House_Finder_Auth.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -164,26 +169,6 @@ namespace FU_House_Finder_Auth.Migrations
                             PasswordHash = "student3",
                             PhoneNumber = "0123456795",
                             Role = 3
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Email = "landlord3@fuhouse.com",
-                            FullName = "Landlord Pending 2",
-                            IsActive = false,
-                            PasswordHash = "landlord3",
-                            PhoneNumber = "0123456792",
-                            Role = 2
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Email = "landlord3@fuhouse.com",
-                            FullName = "Landlord Pending 3",
-                            IsActive = false,
-                            PasswordHash = "landlord4",
-                            PhoneNumber = "0123456793",
-                            Role = 2
                         });
                 });
 

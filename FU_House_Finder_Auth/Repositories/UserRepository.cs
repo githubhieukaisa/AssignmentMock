@@ -43,6 +43,42 @@ namespace FU_House_Finder_Auth.Repositories
             await _context.SaveChangesAsync();
             return user;
         }
+
+        public async Task<RefreshToken> SaveRefreshTokenAsync(int userId, string token, DateTime expiryDate)
+        {
+            var refreshToken = new RefreshToken
+            {
+                UserId = userId,
+                Token = token,
+                ExpiryDate = expiryDate,
+                IsRevoked = false,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.RefreshTokens.Add(refreshToken);
+            await _context.SaveChangesAsync();
+            return refreshToken;
+        }
+
+        public async Task<RefreshToken?> GetRefreshTokenAsync(string token)
+        {
+            return await _context.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == token && !rt.IsRevoked);
+        }
+
+        public async Task<bool> RevokeRefreshTokenAsync(string token)
+        {
+            var refreshToken = await _context.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == token);
+            if (refreshToken == null)
+            {
+                return false;
+            }
+
+            refreshToken.IsRevoked = true;
+            _context.RefreshTokens.Update(refreshToken);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
+
 

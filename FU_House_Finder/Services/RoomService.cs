@@ -99,6 +99,27 @@ namespace FU_House_Finder.Services
 
             return MapToRoomDto(updatedRoom);
         }
+        public async Task<bool> DeleteRoomAsync(int id, string landlordId)
+        {
+            var existingRoom = await _roomRepository.GetRoomByIdAsync(id);
+            if (existingRoom == null)
+            {
+                throw new KeyNotFoundException($"Phòng có id {id} không tồn tại");
+            }
+
+            var house = await _houseRepository.GetHouseByIdAsync(existingRoom.HouseId);
+            if (house == null)
+            {
+                throw new KeyNotFoundException($"Nhà có id {existingRoom.HouseId} không tồn tại");
+            }
+
+            if (house.LandlordId.ToString() != landlordId)
+            {
+                throw new UnauthorizedAccessException("Bạn không có quyền xóa phòng này");
+            }
+
+            return await _roomRepository.DeleteRoomAsync(id);
+        }
 
         private static RoomDto MapToRoomDto(Room room)
         {

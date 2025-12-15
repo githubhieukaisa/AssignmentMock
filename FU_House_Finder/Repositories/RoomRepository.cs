@@ -47,5 +47,14 @@ namespace FU_House_Finder.Repositories
             await _context.SaveChangesAsync();
             return existingRoom;
         }
+        public async Task<bool> DeleteRoomAsync(int id)
+        {
+            var existingRoom = await _context.Rooms.FindAsync(id);
+            if (existingRoom == null) return false;
+
+            _context.Rooms.Remove(existingRoom);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

@@ -4,6 +4,7 @@ using FU_House_Finder_Auth.Repositories.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FU_House_Finder_Auth.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251214141318_initDB")]
+    partial class initDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,7 +80,9 @@ namespace FU_House_Finder_Auth.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -134,56 +139,6 @@ namespace FU_House_Finder_Auth.Migrations
                             PasswordHash = "student123",
                             PhoneNumber = "0123456792",
                             Role = 3
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Email = "landlord2@fuhouse.com",
-                            FullName = "Landlord Pending 1",
-                            IsActive = false,
-                            PasswordHash = "landlord2",
-                            PhoneNumber = "0123456791",
-                            Role = 2
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Email = "landlord3@fuhouse.com",
-                            FullName = "Landlord Extra",
-                            IsActive = true,
-                            PasswordHash = "landlord3",
-                            PhoneNumber = "0123456794",
-                            Role = 2
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Email = "student3@fuhouse.com",
-                            FullName = "Student Gamma",
-                            IsActive = true,
-                            PasswordHash = "student3",
-                            PhoneNumber = "0123456795",
-                            Role = 3
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Email = "landlord3@fuhouse.com",
-                            FullName = "Landlord Pending 2",
-                            IsActive = false,
-                            PasswordHash = "landlord3",
-                            PhoneNumber = "0123456792",
-                            Role = 2
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Email = "landlord3@fuhouse.com",
-                            FullName = "Landlord Pending 3",
-                            IsActive = false,
-                            PasswordHash = "landlord4",
-                            PhoneNumber = "0123456793",
-                            Role = 2
                         });
                 });
 
