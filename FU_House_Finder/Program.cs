@@ -1,3 +1,6 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using FU_House_Finder.DTO.Validators;
 using FU_House_Finder.Repositories;
 using FU_House_Finder.Repositories.Context;
 using FU_House_Finder.Services;
@@ -19,7 +22,10 @@ namespace FU_House_Finder
             builder.Configuration
                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
-
+           
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateHouseDtoValidator>();
+           
             // Get JWT settings
             var jwtSettings = builder.Configuration.GetSection("JwtSettings");
             var secretKey = jwtSettings["SecretKey"];
