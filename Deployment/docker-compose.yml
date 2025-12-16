@@ -1,0 +1,78 @@
+services:
+
+  # ==================== SQL SERVER FOR AUTH ====================
+  auth-db:
+    container_name: authdb
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "${AUTH_DB_PASSWORD}"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1500:1433"
+    networks:
+      - micro
+
+  # ==================== SQL SERVER FOR API ====================
+  api-db:
+    container_name: apidb
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "${API_DB_PASSWORD}"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1501:1433" 
+    networks:
+      - micro
+
+  # ==================== AUTH SERVER ====================
+  auth:
+    container_name: authserver
+    build:
+      context: ../FU_House_Finder_Auth
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: "${ASPNETCORE_ENVIRONMENT}"
+
+      # Inject DB connection
+      ConnectionStrings__DefaultConnection: "Server=${AUTH_DB_HOST};Database=${AUTH_DB_NAME};User Id=${AUTH_DB_USER};Password=${AUTH_DB_PASSWORD};TrustServerCertificate=True;"
+
+      # Inject JWT
+      JwtSettings__Issuer: "${JWT_ISSUER}"
+      JwtSettings__Audience: "${JWT_AUDIENCE}"
+      JwtSettings__SecretKey: "${JWT_KEY}"
+
+    ports:
+      - "5001:${PORT}"
+    depends_on:
+      - auth-db
+    networks:
+      - micro
+
+  # ==================== API SERVER ====================
+  api:
+    container_name: apiserver
+    build:
+      context: ../FU_House_Finder
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: "${ASPNETCORE_ENVIRONMENT}"
+
+      # Inject DB connection
+      ConnectionStrings__DefaultConnection: "Server=${API_DB_HOST};Database=${API_DB_NAME};User Id=${API_DB_USER};Password=${API_DB_PASSWORD};TrustServerCertificate=True;"
+
+      # Inject JWT
+      JwtSettings__Issuer: "${JWT_ISSUER}"
+      JwtSettings__Audience: "${JWT_AUDIENCE}"
+      JwtSettings__SecretKey: "${JWT_KEY}"
+      
+    ports:
+      - "5002:${PORT}"
+    depends_on:
+      - api-db
+      - auth
+    networks:
+      - micro
+
+networks:
+  micro:
+    driver: bridge

@@ -17,7 +17,11 @@ namespace FU_House_Finder_Auth
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            builder.Configuration
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables(); // <--- QUAN TRỌNG: Đặt ở cuối để nó ghi đè tất cả file JSON
             // Configure JWT Settings
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
@@ -98,11 +102,11 @@ namespace FU_House_Finder_Auth
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+            //{
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            //}
 
             app.UseHttpsRedirection();
 
@@ -112,7 +116,26 @@ namespace FU_House_Finder_Auth
             app.UseAuthorization();
 
             app.MapControllers();
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    // Thay MyDbContext bằng tên DbContext thực tế của bạn (vd: AuthDbContext, AppDbContext)
+                    var context = services.GetRequiredService<AppDbContext>();
 
+                    // Lệnh này tương đương với 'update-database' trong console
+                    if (context.Database.GetPendingMigrations().Any())
+                    {
+                        context.Database.Migrate();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "Lỗi khi đang tạo bảng (Migration) cho Database.");
+                }
+            }
             app.Run();
         }
     }

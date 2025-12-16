@@ -22,7 +22,8 @@ namespace FU_House_Finder
             // Config configuration to read from appsettings files
             builder.Configuration
                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-               .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+               .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+               .AddEnvironmentVariables();
            
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddValidatorsFromAssemblyContaining<CreateHouseDtoValidator>();
@@ -33,10 +34,10 @@ namespace FU_House_Finder
             var issuer = jwtSettings["Issuer"];
             var audience = jwtSettings["Audience"];
 
-            if (string.IsNullOrEmpty(secretKey))
-            {
-                throw new InvalidOperationException("JWT SecretKey is not configured in appsettings.json");
-            }
+            //if (string.IsNullOrEmpty(secretKey))
+            //{
+            //    throw new InvalidOperationException("JWT SecretKey is not configured in appsettings.json");
+            //}
 
             // Configure JWT Authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -101,11 +102,11 @@ namespace FU_House_Finder
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+            //{
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            //}
 
             app.UseHttpsRedirection();
 
@@ -115,7 +116,26 @@ namespace FU_House_Finder
 
 
             app.MapControllers();
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    // Thay MyDbContext bằng tên DbContext thực tế của bạn (vd: AuthDbContext, AppDbContext)
+                    var context = services.GetRequiredService<AppDbContext>();
 
+                    // Lệnh này tương đương với 'update-database' trong console
+                    if (context.Database.GetPendingMigrations().Any())
+                    {
+                        context.Database.Migrate();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "Lỗi khi đang tạo bảng (Migration) cho Database.");
+                }
+            }
             app.Run();
         }
     }
