@@ -57,7 +57,10 @@ namespace FU_House_Finder.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Forbid("Bạn không có quyền");
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    message = ex.Message // hoặc "Bạn không có quyền"
+                });
             }
             catch (Exception ex)
             {
