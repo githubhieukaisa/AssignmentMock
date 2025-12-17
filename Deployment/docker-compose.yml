@@ -65,6 +65,8 @@ services:
       JwtSettings__Audience: "${JWT_AUDIENCE}"
       JwtSettings__SecretKey: "${JWT_KEY}"
       
+      #Auth Service URL
+      AuthService__BaseUrl: "http://authserver:${PORT}"
     ports:
       - "5002:${PORT}"
     depends_on:
